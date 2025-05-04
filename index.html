@@ -17,21 +17,27 @@
             text-align: center;
         }
         
+        h1 {
+            margin-bottom: 20px;
+            font-size: 26px;
+        }
+        
         .character-container {
             position: relative;
             display: inline-block;
-            margin: 40px 0;
+            margin: 25px 0 5px; /* Added significant top margin to push character down */
         }
         
         .character-display {
-            font-size: 100px;
-            height: 120px;
+            font-size: 80px;
+            height: 100px;
             cursor: pointer;
+            line-height: 1;
         }
         
         .hover-tooltip {
             position: absolute;
-            top: -30px;
+            top: -32px;
             left: 50%;
             transform: translateX(-50%);
             background-color: #f0f0f0;
@@ -49,33 +55,30 @@
         }
         
         .input-area {
-            margin-bottom: 40px;
+            margin-bottom: 15px;
         }
         
         input[type="text"] {
             padding: 10px;
             font-size: 16px;
-            width: 400px;
+            width: 350px;
             border: 1px solid #ccc;
             border-radius: 4px;
-        }
-        
-        .instruction {
-            margin: 20px 0;
-            font-size: 18px;
+            margin-bottom: 10px; /* Space between input and instruction */
         }
         
         .feedback {
             color: red;
             height: 20px;
-            margin-top: 10px;
-            font-size: 16px;
+            margin-top: -17px;
+            margin-bottom: 15px;
+            font-size: 17px;
         }
         
         .options {
             background-color: #e9e3e3;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 10px;
+            margin-top: 20px; /* Increased margin to separate from game area */
             border-radius: 5px;
             width: 100%;
         }
@@ -83,7 +86,7 @@
         .options-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
         
@@ -100,8 +103,12 @@
         .options-controls a {
             color: #4a90e2;
             text-decoration: none;
-            margin-left: 10px;
+            margin: 0 10px;
             cursor: pointer;
+        }
+        
+        .options-controls span {
+            color: #999;
         }
         
         .font-size-control {
@@ -117,7 +124,7 @@
         .hangul-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 6px;
             margin: 0 auto;
         }
         
@@ -126,26 +133,30 @@
         }
         
         .column-checkbox {
-            margin: 5px;
+            margin: 3px;
         }
         
         .hangul-cell {
             border: 1px solid #ddd;
-            padding: 8px;
-            margin-bottom: 8px;
-            border-radius: 4px;
+            padding: 5px;
+            margin-bottom: 3px;
+            border-radius: 3px;
         }
         
         .character {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: bold;
             transition: font-size 0.3s;
+            margin: 0;
+            line-height: 1.2;
         }
         
         .romanization {
             font-size: 12px;
             color: #666;
             transition: font-size 0.3s;
+            margin: 0;
+            line-height: 1;
         }
     </style>
 </head>
@@ -159,20 +170,20 @@
         </div>
         
         <div class="input-area">
-            <div class="instruction">Type the romanization of the Hangul character.</div>
-            <input type="text" id="userInput" placeholder="Type romanization here" autocomplete="off">
             <div class="feedback" id="feedback"></div>
+            <input type="text" id="userInput" placeholder="Type romanization here" autocomplete="off">
+            <div class="instruction">Type the romanization of the Hangul character. Hover over it if you forgot the answer.</div>
         </div>
         
         <div class="options">
             <div class="options-header">
                 <div class="options-title">Options</div>
                 <div class="options-controls">
-                    <a id="checkAll">check all</a> | <a id="uncheckAll">uncheck all</a>
+                    <a id="checkAll">check all</a><span> | </span><a id="uncheckAll">uncheck all</a>
                     <div class="font-size-control">
                         <label for="fontSizeSlider">Font Size:</label>
-                        <input type="range" id="fontSizeSlider" min="18" max="40" value="26" step="2">
-                        <span id="fontSizeValue">26px</span>
+                        <input type="range" id="fontSizeSlider" min="18" max="40" value="28" step="2">
+                        <span id="fontSizeValue">28px</span>
                     </div>
                 </div>
             </div>
@@ -247,8 +258,8 @@
         let selectedColumns = [0]; // By default, first column is selected
         let checkboxes = [];
         let currentInputExpected = "";
-        let currentFontSize = 26;
-        let currentRomanizationSize = 12;
+        let currentFontSize = 28;
+        let currentRomanizationSize = 13;
 
         // Create hover tooltip functionality
         function setupHoverTooltip() {
@@ -405,6 +416,11 @@
             // Clear input and feedback
             document.getElementById('userInput').value = '';
             document.getElementById('feedback').textContent = '';
+            
+            // Focus on input field for better UX
+            setTimeout(() => {
+                document.getElementById('userInput').focus();
+            }, 50);
         }
 
         // Check user input as they type
@@ -504,8 +520,9 @@
             // Create initial pool and display first character
             createPool();
             
-            // Set initial font size
-            updateFontSize(currentFontSize);
+            // Set initial font size to 28px
+            updateFontSize(28);
+            document.getElementById('fontSizeSlider').value = 28;
         }
 
         // Start the game when the page loads
