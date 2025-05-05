@@ -17,7 +17,7 @@
         .container {
             text-align: center;
             width: 900px; /* Base width at 1440p */
-            padding: 20px;
+            padding: 5px;
             transform-origin: top center;
             /* Initial size - will be adjusted by JS */
         }
@@ -81,56 +81,90 @@
             font-size: 17px;
         }
         
-        .options {
-            background-color: #e9e3e3;
-            padding: 10px;
-            margin-top: 20px; /* Increased margin to separate from game area */
-            border-radius: 5px;
-            width: 100%;
-        }
-        
-        .options-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .options-title {
-            font-size: 24px;
-            color: #7d5858;
-        }
-        
-        .options-controls {
-            display: flex;
-            align-items: center;
-        }
-        
-        .options-controls a {
-            color: #4a90e2;
-            text-decoration: none;
-            margin: 0 10px;
-            cursor: pointer;
-        }
-        
-        .options-controls span {
-            color: #999;
-        }
-        
-        .font-size-control {
-            display: flex;
-            align-items: center;
-            margin-left: 20px;
-        }
-        
-        .font-size-control label {
-            margin-right: 10px;
-        }
+.options {
+    background-color: #e9e3e3;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 5px;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    min-width: 280px; /* Ensure minimum width */
+}
+
+.options-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.options-title {
+    font-size: clamp(16px, 3vw, 24px); /* Responsive font size */
+    color: #7d5858;
+    margin-right: 10px;
+    white-space: nowrap;
+    flex-shrink: 0; /* Don't shrink the title */
+}
+
+.options-controls {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex: 1; /* Take remaining space */
+    justify-content: flex-end; /* Push content to the right */
+}
+
+.options-controls a {
+    color: #4a90e2;
+    text-decoration: none;
+    margin: 0 5px; /* Reduced margins */
+    cursor: pointer;
+    font-size: clamp(12px, 2vw, 16px); /* Responsive font size */
+}
+
+.options-controls span {
+    color: #999;
+    font-size: clamp(12px, 2vw, 16px); /* Responsive font size */
+}
+
+.font-size-control {
+    display: flex;
+    align-items: center;
+    margin-left: 5px; /* Reduced margin */
+    white-space: nowrap;
+}
+
+.font-size-control label {
+    margin-right: 5px;
+    font-size: clamp(12px, 2vw, 16px); /* Responsive font size */
+}
+
+#fontSizeSlider {
+    width: clamp(60px, 10vw, 100px); /* Responsive width */
+}
+
+#fontSizeValue {
+    font-size: clamp(12px, 2vw, 16px); /* Responsive font size */
+    width: 40px; /* Fixed width for the font size display */
+}
+
+/* Very small screens - additional adjustments */
+@media (max-width: 480px) {
+    .options {
+        width: 90%; /* Wider on small screens */
+    }
+    
+    .font-size-control label {
+        display: none; /* Hide "Font Size:" label on very small screens */
+    }
+}
         
         .hangul-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            gap: 1px;
             margin: 0 auto;
         }
         
@@ -139,7 +173,7 @@
         }
         
         .column-checkbox {
-            margin: 3px;
+            margin: 1px;
         }
         
         .hangul-cell {
