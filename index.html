@@ -5,16 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangul Recognition Game</title>
     <style>
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+        
         body {
             font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
             background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            height: 100%;
+            overflow-y: auto;
+            min-height: 100vh;
         }
         
         .container {
             text-align: center;
+            width: 900px;
+            padding: 20px;
+            transform-origin: top center;
+            margin: 20px auto;
         }
         
         h1 {
@@ -25,7 +38,7 @@
         .character-container {
             position: relative;
             display: inline-block;
-            margin: 25px 0 5px; /* Added significant top margin to push character down */
+            margin: 25px 0 5px;
         }
         
         .character-display {
@@ -64,7 +77,7 @@
             width: 350px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            margin-bottom: 10px; /* Space between input and instruction */
+            margin-bottom: 10px;
         }
         
         .feedback {
@@ -78,7 +91,7 @@
         .options {
             background-color: #e9e3e3;
             padding: 10px;
-            margin-top: 20px; /* Increased margin to separate from game area */
+            margin-top: 20px;
             border-radius: 5px;
             width: 100%;
         }
@@ -158,6 +171,16 @@
             margin: 0;
             line-height: 1;
         }
+        
+        .instruction {
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .hangul-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -188,46 +211,33 @@
                 </div>
             </div>
             
-            <!-- Compact grid layout for Hangul characters -->
-            <div class="hangul-grid" id="hangulGrid">
-                <!-- Grid will be populated via JavaScript -->
-            </div>
+            <div class="hangul-grid" id="hangulGrid"></div>
         </div>
     </div>
 
     <script>
-        // Define all Hangul characters with their romanizations
         const hangulChars = [
-            // Column 1: Basic Vowels
             { char: 'ㅏ', romanization: 'a', column: 0 },
             { char: 'ㅓ', romanization: 'eo', column: 0 },
             { char: 'ㅗ', romanization: 'o', column: 0 },
             { char: 'ㅜ', romanization: 'u', column: 0 },
             { char: 'ㅡ', romanization: 'eu', column: 0 },
             { char: 'ㅣ', romanization: 'i', column: 0 },
-            
-            // Column 2: Complex Vowels
             { char: 'ㅐ', romanization: 'ae', column: 1 },
             { char: 'ㅔ', romanization: 'e', column: 1 },
             { char: 'ㅚ', romanization: 'oe', column: 1 },
             { char: 'ㅟ', romanization: 'wi', column: 1 },
             { char: 'ㅢ', romanization: 'ui', column: 1 },
-            
-            // Column 3: Y-Series Vowels
             { char: 'ㅑ', romanization: 'ya', column: 2 },
             { char: 'ㅕ', romanization: 'yeo', column: 2 },
             { char: 'ㅛ', romanization: 'yo', column: 2 },
             { char: 'ㅠ', romanization: 'yu', column: 2 },
             { char: 'ㅒ', romanization: 'yae', column: 2 },
             { char: 'ㅖ', romanization: 'ye', column: 2 },
-            
-            // Column 4: W-Series Vowels
             { char: 'ㅘ', romanization: 'wa', column: 3 },
             { char: 'ㅙ', romanization: 'wae', column: 3 },
             { char: 'ㅝ', romanization: 'wo', column: 3 },
             { char: 'ㅞ', romanization: 'we', column: 3 },
-            
-            // Column 5: Basic Consonants Part 1
             { char: 'ㄱ', romanization: ['g', 'k'], column: 4 },
             { char: 'ㄴ', romanization: 'n', column: 4 },
             { char: 'ㄷ', romanization: ['d', 't'], column: 4 },
@@ -235,8 +245,6 @@
             { char: 'ㅁ', romanization: 'm', column: 4 },
             { char: 'ㅂ', romanization: ['b', 'p'], column: 4 },
             { char: 'ㅅ', romanization: 's', column: 4 },
-            
-            // Column 6: Basic Consonants Part 2
             { char: 'ㅇ', romanization: 'ng', column: 5 },
             { char: 'ㅈ', romanization: 'j', column: 5 },
             { char: 'ㅊ', romanization: 'ch', column: 5 },
@@ -244,8 +252,6 @@
             { char: 'ㅌ', romanization: 't', column: 5 },
             { char: 'ㅍ', romanization: 'p', column: 5 },
             { char: 'ㅎ', romanization: 'h', column: 5 },
-            
-            // Column 7: Double Consonants (moved to their own column)
             { char: 'ㄲ', romanization: 'kk', column: 6 },
             { char: 'ㄸ', romanization: 'tt', column: 6 },
             { char: 'ㅃ', romanization: 'pp', column: 6 },
@@ -255,13 +261,32 @@
 
         let currentPool = [];
         let currentCharIndex = 0;
-        let selectedColumns = [0]; // By default, first column is selected
+        let selectedColumns = [0];
         let checkboxes = [];
         let currentInputExpected = "";
         let currentFontSize = 28;
         let currentRomanizationSize = 13;
+        const REFERENCE_WIDTH = 1706.67;
+        const REFERENCE_HEIGHT = 960;
+        let currentScale = 1;
 
-        // Create hover tooltip functionality
+        function updatePageScale() {
+            const container = document.querySelector('.container');
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            const widthScale = viewportWidth / REFERENCE_WIDTH;
+            const heightScale = viewportHeight / REFERENCE_HEIGHT;
+            currentScale = Math.min(widthScale, heightScale, 1.5);
+            if (currentScale < 0.5) currentScale = 0.5;
+            
+            container.style.transform = `scale(${currentScale})`;
+            
+            const scaledHeight = container.offsetHeight * currentScale;
+            const availableSpace = viewportHeight - (scaledHeight + 40);
+            container.style.marginBottom = availableSpace > 0 ? `${availableSpace}px` : '0';
+        }
+
         function setupHoverTooltip() {
             const charContainer = document.querySelector('.character-container');
             const tooltip = document.getElementById('hoverTooltip');
@@ -272,47 +297,32 @@
                     const tooltipText = Array.isArray(currentChar.romanization) 
                         ? currentChar.romanization.join(' or ') 
                         : currentChar.romanization;
-                    
                     tooltip.textContent = tooltipText;
                 }
             });
         }
 
-        // Create the grid of Hangul characters
         function createHangulGrid() {
             const grid = document.getElementById('hangulGrid');
-            
-            // Get unique column numbers
             const columns = [...new Set(hangulChars.map(char => char.column))];
             
-            // Create columns
             columns.forEach(colNum => {
                 const column = document.createElement('div');
                 column.className = 'grid-column';
                 
-                // Add checkbox for column
                 const checkboxDiv = document.createElement('div');
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.className = 'column-checkbox';
                 checkbox.dataset.column = colNum;
+                if (colNum === 0) checkbox.checked = true;
                 
-                // First column checked by default
-                if (colNum === 0) {
-                    checkbox.checked = true;
-                }
-                
-                checkbox.addEventListener('change', () => {
-                    updateSelectedColumns();
-                });
-                
+                checkbox.addEventListener('change', () => updateSelectedColumns());
                 checkboxDiv.appendChild(checkbox);
                 column.appendChild(checkboxDiv);
                 checkboxes.push(checkbox);
                 
-                // Add characters for this column
-                const colChars = hangulChars.filter(char => char.column === colNum);
-                colChars.forEach(charObj => {
+                hangulChars.filter(char => char.column === colNum).forEach(charObj => {
                     const cell = document.createElement('div');
                     cell.className = 'hangul-cell';
                     
@@ -335,47 +345,23 @@
             });
         }
 
-        // Update the selectedColumns array based on checkbox status
         function updateSelectedColumns() {
-            selectedColumns = [];
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    selectedColumns.push(parseInt(checkbox.dataset.column));
-                }
-            });
-            
-            // Create new pool when selection changes
-            createPool();
-        }
-
-        // Create a pool of characters based on selected columns
-        function createPool() {
-            currentPool = [];
-            
+            selectedColumns = checkboxes.filter(checkbox => checkbox.checked)
+                                      .map(checkbox => parseInt(checkbox.dataset.column));
             if (selectedColumns.length === 0) {
-                // If no columns selected, use the first column
                 selectedColumns = [0];
                 checkboxes[0].checked = true;
             }
-            
-            // Filter characters that are in selected columns
-            hangulChars.forEach(char => {
-                if (selectedColumns.includes(char.column)) {
-                    currentPool.push(char);
-                }
-            });
-            
-            // Shuffle the pool
+            createPool();
+        }
+
+        function createPool() {
+            currentPool = hangulChars.filter(char => selectedColumns.includes(char.column));
             shuffleArray(currentPool);
-            
-            // Reset index
             currentCharIndex = 0;
-            
-            // Display the first character
             displayCurrentCharacter();
         }
 
-        // Fisher-Yates shuffle algorithm
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -383,15 +369,8 @@
             }
         }
 
-        // Display the current character
         function displayCurrentCharacter() {
-            if (currentPool.length === 0) {
-                createPool();
-                return;
-            }
-            
-            if (currentCharIndex >= currentPool.length) {
-                // We've gone through all characters in the pool
+            if (currentPool.length === 0 || currentCharIndex >= currentPool.length) {
                 createPool();
                 return;
             }
@@ -399,31 +378,22 @@
             const charDisplay = document.getElementById('currentCharacter');
             charDisplay.textContent = currentPool[currentCharIndex].char;
             
-            // Update tooltip
             const tooltip = document.getElementById('hoverTooltip');
-            const tooltipText = Array.isArray(currentPool[currentCharIndex].romanization) 
-                ? currentPool[currentCharIndex].romanization.join(' or ') 
-                : currentPool[currentCharIndex].romanization;
+            const currentChar = currentPool[currentCharIndex];
+            const tooltipText = Array.isArray(currentChar.romanization) 
+                ? currentChar.romanization.join(' or ') 
+                : currentChar.romanization;
             tooltip.textContent = tooltipText;
             
-            // Set the expected input
-            if (Array.isArray(currentPool[currentCharIndex].romanization)) {
-                currentInputExpected = currentPool[currentCharIndex].romanization[0]; // Default to first option
-            } else {
-                currentInputExpected = currentPool[currentCharIndex].romanization;
-            }
+            currentInputExpected = Array.isArray(currentChar.romanization) 
+                ? currentChar.romanization[0] 
+                : currentChar.romanization;
             
-            // Clear input and feedback
             document.getElementById('userInput').value = '';
             document.getElementById('feedback').textContent = '';
-            
-            // Focus on input field for better UX
-            setTimeout(() => {
-                document.getElementById('userInput').focus();
-            }, 50);
+            setTimeout(() => document.getElementById('userInput').focus(), 50);
         }
 
-        // Check user input as they type
         function checkDynamicInput(input) {
             const currentChar = currentPool[currentCharIndex];
             const correctAnswers = Array.isArray(currentChar.romanization) 
@@ -431,101 +401,63 @@
                 : [currentChar.romanization];
             const feedback = document.getElementById('feedback');
             
-            // Check if any correct answer starts with the current input
-            let possiblyCorrect = correctAnswers.some(answer => 
-                answer.toLowerCase().startsWith(input.toLowerCase())
-            );
+            const possiblyCorrect = correctAnswers.some(answer => 
+                answer.toLowerCase().startsWith(input.toLowerCase()));
             
             if (possiblyCorrect) {
-                // Check if any answer matches exactly
-                let exactMatch = correctAnswers.some(answer => 
-                    answer.toLowerCase() === input.toLowerCase()
-                );
-                
-                if (exactMatch) {
-                    // Full match found, move to next character
+                if (correctAnswers.some(answer => answer.toLowerCase() === input.toLowerCase())) {
                     setTimeout(() => {
                         currentCharIndex++;
                         displayCurrentCharacter();
-                    }, 200); // Small delay for better UX
+                    }, 200);
                 }
-                
                 feedback.textContent = '';
             } else {
-                // Input doesn't match any possible answer
-                const correctDisplay = correctAnswers.join(' or ');
-                feedback.textContent = correctDisplay;
-                
-                // Auto-clear the input for a fresh start
-                setTimeout(() => {
-                    document.getElementById('userInput').value = '';
-                }, 800);
+                feedback.textContent = correctAnswers.join(' or ');
+                setTimeout(() => document.getElementById('userInput').value = '', 800);
             }
         }
 
-        // Update font size based on slider value
         function updateFontSize(size) {
             currentFontSize = size;
-            currentRomanizationSize = size * 0.46; // Proportional size for romanization text
-            
+            currentRomanizationSize = size * 0.46;
             document.getElementById('fontSizeValue').textContent = size + 'px';
             
-            const characters = document.querySelectorAll('.character');
-            const romanizations = document.querySelectorAll('.romanization');
-            
-            characters.forEach(elem => {
-                elem.style.fontSize = size + 'px';
-            });
-            
-            romanizations.forEach(elem => {
-                elem.style.fontSize = currentRomanizationSize + 'px';
-            });
+            document.querySelectorAll('.character').forEach(elem => 
+                elem.style.fontSize = size + 'px');
+            document.querySelectorAll('.romanization').forEach(elem => 
+                elem.style.fontSize = currentRomanizationSize + 'px');
         }
 
-        // Initialize the game
         function initGame() {
-            // Create the grid of hangul characters
             createHangulGrid();
-            
-            // Set up input field for dynamic checking
-            const userInput = document.getElementById('userInput');
-            userInput.addEventListener('input', (e) => {
-                checkDynamicInput(e.target.value);
-            });
-            
-            // Set up hover tooltip
+            document.getElementById('userInput').addEventListener('input', (e) => 
+                checkDynamicInput(e.target.value));
             setupHoverTooltip();
             
-            // Set up check all and uncheck all buttons
             document.getElementById('checkAll').addEventListener('click', () => {
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = true;
-                });
+                checkboxes.forEach(checkbox => checkbox.checked = true);
                 updateSelectedColumns();
             });
             
             document.getElementById('uncheckAll').addEventListener('click', () => {
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                });
+                checkboxes.forEach(checkbox => checkbox.checked = false);
                 updateSelectedColumns();
             });
             
-            // Set up font size slider
             const fontSizeSlider = document.getElementById('fontSizeSlider');
-            fontSizeSlider.addEventListener('input', (e) => {
-                updateFontSize(parseInt(e.target.value));
-            });
+            fontSizeSlider.addEventListener('input', (e) => 
+                updateFontSize(parseInt(e.target.value)));
             
-            // Create initial pool and display first character
             createPool();
-            
-            // Set initial font size to 28px
             updateFontSize(28);
-            document.getElementById('fontSizeSlider').value = 28;
+            fontSizeSlider.value = 28;
+            
+            updatePageScale();
+            window.addEventListener('resize', updatePageScale);
+            new ResizeObserver(updatePageScale).observe(document.body);
         }
 
-        // Start the game when the page loads
         window.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
