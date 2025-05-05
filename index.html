@@ -150,7 +150,65 @@
     width: 40px; /* Fixed width for the font size display */
 }
 
+/* Very small screens - additional adjustments */
+@media (max-width: 480px) {
+    .options {
+        width: 90%; /* Wider on small screens */
+    }
+    
+    .font-size-control label {
+        display: none; /* Hide "Font Size:" label on very small screens */
+    }
+}
+        
+        .hangul-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            margin: 0 auto;
+        }
+        
+        .grid-column {
+            text-align: center;
+        }
+        
+        .column-checkbox {
+            margin: 1px;
+        }
+        
+        .hangul-cell {
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin-bottom: 3px;
+            border-radius: 3px;
+        }
+        
+        .character {
+            font-size: 28px;
+            font-weight: bold;
+            transition: font-size 0.3s;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .romanization {
+            font-size: 12px;
+            color: #666;
+            transition: font-size 0.3s;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .instruction {
+            font-size: 14px;
+        }
 
+        /* Very small screens - rearrange grid */
+        @media (max-width: 480px) {
+            .hangul-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
