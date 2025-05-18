@@ -12,14 +12,18 @@
             padding: 0;
             display: flex;
             justify-content: center;
+            min-height: 100vh; /* Ensure full viewport height */
+            width: 100%; /* Full width */
         }
         
         .container {
             text-align: center;
-            width: 900px; /* Base width at 1440p */
+            width: 100%; /* Full width on mobile */
+            max-width: 900px; /* Max width for larger screens */
             padding: 5px;
             transform-origin: top center;
             /* Initial size - will be adjusted by JS */
+            box-sizing: border-box; /* Include padding in width calculation */
         }
         
         h1 {
@@ -67,7 +71,8 @@
         input[type="text"] {
             padding: 10px;
             font-size: 16px;
-            width: 350px;
+            width: 80%; /* Relative width for better mobile support */
+            max-width: 350px; /* Maximum width on larger screens */
             border: 1px solid #ccc;
             border-radius: 4px;
             margin-bottom: 10px; /* Space between input and instruction */
@@ -86,7 +91,7 @@
     padding: 10px;
     margin-top: 20px;
     border-radius: 5px;
-    width: 60%;
+    width: 90%; /* Wider for mobile */
     margin-left: auto;
     margin-right: auto;
     min-width: 280px; /* Ensure minimum width */
@@ -96,12 +101,12 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap; /* Allow wrapping on very small screens */
     align-items: center;
 }
 
 .options-title {
-    font-size: clamp(16px, 3vw, 24px); /* Responsive font size */
+    font-size: clamp(16px, 5vw, 24px); /* Responsive font size */
     color: #7d5858;
     margin-right: 10px;
     white-space: nowrap;
@@ -114,6 +119,8 @@
     white-space: nowrap;
     flex: 1; /* Take remaining space */
     justify-content: flex-end; /* Push content to the right */
+    flex-wrap: wrap; /* Allow wrapping on very small screens */
+    margin-top: 5px; /* Add space when wrapped */
 }
 
 .options-controls a {
@@ -121,12 +128,12 @@
     text-decoration: none;
     margin: 0 5px; /* Reduced margins */
     cursor: pointer;
-    font-size: clamp(12px, 2vw, 16px); /* Responsive font size */
+    font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
 }
 
 .options-controls span {
     color: #999;
-    font-size: clamp(12px, 2vw, 16px); /* Responsive font size */
+    font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
 }
 
 .font-size-control {
@@ -138,26 +145,72 @@
 
 .font-size-control label {
     margin-right: 5px;
-    font-size: clamp(12px, 2vw, 16px); /* Responsive font size */
+    font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
 }
 
 #fontSizeSlider {
-    width: clamp(60px, 10vw, 100px); /* Responsive width */
+    width: clamp(60px, 12vw, 100px); /* Responsive width */
 }
 
 #fontSizeValue {
-    font-size: clamp(12px, 2vw, 16px); /* Responsive font size */
-    width: 40px; /* Fixed width for the font size display */
+    font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
+    width: 45px; /* Fixed width for the font size display */
+    text-align: left;
+}
+
+/* Mobile specific styles */
+@media (max-width: 767px) {
+    .container {
+        padding: 10px 5px;
+        height: 100vh; /* Full viewport height */
+        display: flex;
+        flex-direction: column;
+    }
+    
+    h1 {
+        font-size: clamp(20px, 6vw, 26px);
+        margin-top: 10px;
+    }
+    
+    .options {
+        width: 95%; /* Almost full width on mobile */
+        margin-top: auto; /* Push to bottom */
+    }
+    
+    .options-header {
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .font-size-control label {
+        display: none; /* Hide "Font Size:" label on mobile */
+    }
+    
+    .character-display {
+        font-size: clamp(60px, 18vw, 80px);
+    }
+    
+    .hangul-grid {
+        grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+        gap: 2px;
+    }
 }
 
 /* Very small screens - additional adjustments */
 @media (max-width: 480px) {
-    .options {
-        width: 90%; /* Wider on small screens */
+    .options-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
     
-    .font-size-control label {
-        display: none; /* Hide "Font Size:" label on very small screens */
+    .options-controls {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 8px;
+    }
+    
+    .hangul-grid {
+        grid-template-columns: repeat(4, 1fr);
     }
 }
         
@@ -203,10 +256,19 @@
             font-size: 14px;
         }
 
-        /* Very small screens - rearrange grid */
-        @media (max-width: 480px) {
-            .hangul-grid {
-                grid-template-columns: repeat(7, 1fr);
+        /* Touch device enhancements */
+        @media (pointer: coarse) {
+            .character-container:active .hover-tooltip {
+                opacity: 1;
+            }
+            
+            .hangul-cell {
+                padding: 6px 3px;
+            }
+            
+            .column-checkbox {
+                transform: scale(1.25);
+                margin: 3px;
             }
         }
     </style>
@@ -311,35 +373,47 @@
         let currentInputExpected = "";
         let currentFontSize = 28;
         let currentRomanizationSize = 13;
+        let isMobile = false;
         
-        // Scaling constants - using your reference resolution of 2560x1440 at 150% zoom
-        // This means the actual reference is 2560/1.5 x 1440/1.5 = 1706.67 x 960
-        const REFERENCE_WIDTH = 1706.67;
-        const REFERENCE_HEIGHT = 960;
-        let currentScale = 1;
+        // Detect if device is mobile
+        function detectMobile() {
+            return window.innerWidth <= 767;
+        }
 
         // Apply scaling to the entire container
         function updatePageScale() {
+            isMobile = detectMobile();
             const container = document.querySelector('.container');
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
             
-            // Calculate scale based on width - this ensures the layout fits horizontally
-            // Increased by 15% (1.15) as requested
-            currentScale = Math.min(viewportWidth / REFERENCE_WIDTH, 5) * 1.03; 
-            
-            // For very small screens, ensure minimum scale
-            if (currentScale < 0.575) currentScale = 0.575; // Increased minimum by 15% too
-            
-            // Apply the transform to scale the entire container
-            container.style.transform = `scale(${currentScale})`;
-            
-            // We need to set margin-bottom on the container to prevent overlap
-            // when it's scaled down (since transform doesn't affect document flow)
-            const scaledHeight = container.offsetHeight * currentScale;
-            container.style.marginBottom = `${container.offsetHeight - scaledHeight}px`;
-            
-            console.log(`Screen size: ${viewportWidth}x${viewportHeight}, Scale: ${currentScale}`);
+            if (isMobile) {
+                // For mobile, don't scale - use responsive design instead
+                container.style.transform = 'none';
+                container.style.marginBottom = '0';
+                
+                // Adjust grid columns based on screen width
+                const grid = document.getElementById('hangulGrid');
+                if (window.innerWidth <= 480) {
+                    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                } else {
+                    grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+                }
+            } else {
+                // For desktop, use the scaling approach
+                const REFERENCE_WIDTH = 1706.67;
+                let currentScale = Math.min(window.innerWidth / REFERENCE_WIDTH, 5) * 1.03;
+                
+                // For smaller desktop screens, ensure minimum scale
+                if (currentScale < 0.575) currentScale = 0.575;
+                
+                // Apply the transform to scale the entire container
+                container.style.transform = `scale(${currentScale})`;
+                
+                // We need to set margin-bottom on the container to prevent overlap
+                const scaledHeight = container.offsetHeight * currentScale;
+                container.style.marginBottom = `${container.offsetHeight - scaledHeight}px`;
+                
+                console.log(`Desktop mode: Scale: ${currentScale}`);
+            }
         }
 
         // Create hover tooltip functionality
@@ -347,7 +421,8 @@
             const charContainer = document.querySelector('.character-container');
             const tooltip = document.getElementById('hoverTooltip');
             
-            charContainer.addEventListener('mouseenter', () => {
+            // Function to show tooltip
+            function showTooltip() {
                 if (currentPool.length > 0 && currentCharIndex < currentPool.length) {
                     const currentChar = currentPool[currentCharIndex];
                     const tooltipText = Array.isArray(currentChar.romanization) 
@@ -355,8 +430,26 @@
                         : currentChar.romanization;
                     
                     tooltip.textContent = tooltipText;
+                    tooltip.style.opacity = '1';
                 }
+            }
+            
+            // Function to hide tooltip
+            function hideTooltip() {
+                tooltip.style.opacity = '0';
+            }
+            
+            // Mouse events for desktop
+            charContainer.addEventListener('mouseenter', showTooltip);
+            charContainer.addEventListener('mouseleave', hideTooltip);
+            
+            // Touch events for mobile
+            charContainer.addEventListener('touchstart', (e) => {
+                showTooltip();
+                e.preventDefault(); // Prevent mouse events from firing
             });
+            
+            charContainer.addEventListener('touchend', hideTooltip);
         }
 
         // Create the grid of Hangul characters
@@ -605,11 +698,16 @@
             updateFontSize(28);
             document.getElementById('fontSizeSlider').value = 28;
             
-            // Apply initial scaling
+            // Apply initial scaling based on device
             updatePageScale();
             
             // Update scaling on window resize
             window.addEventListener('resize', updatePageScale);
+            
+            // Add additional mobile touch support
+            if ('ontouchstart' in window) {
+                document.body.classList.add('touch-device');
+            }
         }
 
         // Start the game when the page loads
