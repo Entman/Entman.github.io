@@ -170,16 +170,18 @@
     h1 {
         font-size: clamp(20px, 6vw, 26px);
         margin-top: 10px;
+        margin-bottom: 10px;
     }
     
     .options {
         width: 95%; /* Almost full width on mobile */
         margin-top: auto; /* Push to bottom */
+        padding: 8px 5px;
     }
     
     .options-header {
         justify-content: space-between;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     
     .font-size-control label {
@@ -187,12 +189,17 @@
     }
     
     .character-display {
-        font-size: clamp(60px, 18vw, 80px);
+        font-size: clamp(60px, 16vw, 80px);
+        height: 80px;
+    }
+    
+    .character-container {
+        margin: 15px 0 5px;
     }
     
     .hangul-grid {
-        grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-        gap: 2px;
+        grid-template-columns: repeat(7, minmax(35px, 1fr));
+        gap: 0px;
     }
 }
 
@@ -210,7 +217,19 @@
     }
     
     .hangul-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, minmax(35px, 1fr)) !important;
+    }
+    
+    .character {
+        font-size: 22px; /* Even smaller characters on very small screens */
+    }
+    
+    .romanization {
+        font-size: 9px; /* Even smaller romanization on very small screens */
+    }
+    
+    .options {
+        padding: 5px;
     }
 }
         
@@ -219,10 +238,13 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
             margin: 0 auto;
+            max-width: 100%;
+            overflow-x: auto;
         }
         
         .grid-column {
             text-align: center;
+            min-width: 40px; /* Minimum width for columns */
         }
         
         .column-checkbox {
@@ -231,7 +253,7 @@
         
         .hangul-cell {
             border: 1px solid #ddd;
-            padding: 5px;
+            padding: 5px 3px; /* Reduced horizontal padding */
             margin-bottom: 3px;
             border-radius: 3px;
         }
@@ -254,6 +276,27 @@
         
         .instruction {
             font-size: 14px;
+        }
+        
+        /* Mobile grid adjustments */
+        @media (max-width: 767px) {
+            .hangul-grid {
+                grid-template-columns: repeat(7, minmax(35px, 1fr));
+                font-size: 0.9em;
+            }
+            
+            .hangul-cell {
+                padding: 3px 2px;
+                margin-bottom: 2px;
+            }
+            
+            .character {
+                font-size: 24px; /* Smaller characters on mobile */
+            }
+            
+            .romanization {
+                font-size: 10px; /* Smaller romanization on mobile */
+            }
         }
 
         /* Touch device enhancements */
@@ -384,6 +427,7 @@
         function updatePageScale() {
             isMobile = detectMobile();
             const container = document.querySelector('.container');
+            const grid = document.getElementById('hangulGrid');
             
             if (isMobile) {
                 // For mobile, don't scale - use responsive design instead
@@ -391,12 +435,21 @@
                 container.style.marginBottom = '0';
                 
                 // Adjust grid columns based on screen width
-                const grid = document.getElementById('hangulGrid');
                 if (window.innerWidth <= 480) {
-                    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-                } else {
-                    grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+                    // For very small screens, use 4 columns
+                    grid.style.gridTemplateColumns = 'repeat(4, minmax(35px, 1fr))';
+                } else if (window.innerWidth <= 767) {
+                    // For medium mobile screens
+                    grid.style.gridTemplateColumns = 'repeat(7, minmax(35px, 1fr))';
+                    // Reduce font size for better fit
+                    if (currentFontSize > 24) {
+                        updateFontSize(24);
+                        document.getElementById('fontSizeSlider').value = 24;
+                    }
                 }
+                
+                // Set height to fix Safari iOS issues with 100vh
+                container.style.height = window.innerHeight + 'px';
             } else {
                 // For desktop, use the scaling approach
                 const REFERENCE_WIDTH = 1706.67;
@@ -411,6 +464,9 @@
                 // We need to set margin-bottom on the container to prevent overlap
                 const scaledHeight = container.offsetHeight * currentScale;
                 container.style.marginBottom = `${container.offsetHeight - scaledHeight}px`;
+                
+                // Reset to default grid layout for desktop
+                grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
                 
                 console.log(`Desktop mode: Scale: ${currentScale}`);
             }
@@ -701,8 +757,12 @@
             // Apply initial scaling based on device
             updatePageScale();
             
-            // Update scaling on window resize
+            // Update scaling on window resize and orientation change
             window.addEventListener('resize', updatePageScale);
+            window.addEventListener('orientationchange', function() {
+                // Small delay to ensure dimensions are updated after orientation change
+                setTimeout(updatePageScale, 200);
+            });
             
             // Add additional mobile touch support
             if ('ontouchstart' in window) {
