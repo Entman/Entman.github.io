@@ -197,9 +197,33 @@
         margin: 15px 0 5px;
     }
     
+    /* Improved grid handling on mobile */
     .hangul-grid {
-        grid-template-columns: repeat(7, minmax(35px, 1fr));
-        gap: 0px;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        width: 100%;
+        padding-bottom: 5px;
+    }
+    
+    /* Make grid columns narrower on mobile */
+    .grid-column {
+        flex: 0 0 auto;
+        width: 42px !important; /* Fixed width for columns on mobile */
+        min-width: unset !important;
+    }
+    
+    /* Adjust cell content for narrower columns */
+    .hangul-cell {
+        padding: 3px 1px !important;
+    }
+    
+    .character {
+        font-size: 20px !important; /* Smaller on mobile */
+    }
+    
+    .romanization {
+        font-size: 8px !important; /* Smaller on mobile */
     }
 }
 
@@ -216,20 +240,31 @@
         margin-top: 8px;
     }
     
-    .hangul-grid {
-        grid-template-columns: repeat(4, minmax(35px, 1fr)) !important;
+    /* Further reduce column width on very small screens */
+    .grid-column {
+        width: 38px !important;
     }
     
     .character {
-        font-size: 22px; /* Even smaller characters on very small screens */
+        font-size: 18px !important;
     }
     
     .romanization {
-        font-size: 9px; /* Even smaller romanization on very small screens */
+        font-size: 7px !important;
     }
     
     .options {
         padding: 5px;
+    }
+    
+    /* Make the grid scrollable horizontally */
+    .hangul-grid::-webkit-scrollbar {
+        height: 3px;
+    }
+    
+    .hangul-grid::-webkit-scrollbar-thumb {
+        background-color: #aaa;
+        border-radius: 3px;
     }
 }
         
@@ -278,27 +313,6 @@
             font-size: 14px;
         }
         
-        /* Mobile grid adjustments */
-        @media (max-width: 767px) {
-            .hangul-grid {
-                grid-template-columns: repeat(7, minmax(35px, 1fr));
-                font-size: 0.9em;
-            }
-            
-            .hangul-cell {
-                padding: 3px 2px;
-                margin-bottom: 2px;
-            }
-            
-            .character {
-                font-size: 24px; /* Smaller characters on mobile */
-            }
-            
-            .romanization {
-                font-size: 10px; /* Smaller romanization on mobile */
-            }
-        }
-
         /* Touch device enhancements */
         @media (pointer: coarse) {
             .character-container:active .hover-tooltip {
@@ -434,19 +448,10 @@
                 container.style.transform = 'none';
                 container.style.marginBottom = '0';
                 
-                // Adjust grid columns based on screen width
-                if (window.innerWidth <= 480) {
-                    // For very small screens, use 4 columns
-                    grid.style.gridTemplateColumns = 'repeat(4, minmax(35px, 1fr))';
-                } else if (window.innerWidth <= 767) {
-                    // For medium mobile screens
-                    grid.style.gridTemplateColumns = 'repeat(7, minmax(35px, 1fr))';
-                    // Reduce font size for better fit
-                    if (currentFontSize > 24) {
-                        updateFontSize(24);
-                        document.getElementById('fontSizeSlider').value = 24;
-                    }
-                }
+                // Switch to flex layout for mobile
+                grid.style.display = 'flex';
+                grid.style.flexWrap = 'nowrap';
+                grid.style.overflowX = 'auto';
                 
                 // Set height to fix Safari iOS issues with 100vh
                 container.style.height = window.innerHeight + 'px';
@@ -466,6 +471,7 @@
                 container.style.marginBottom = `${container.offsetHeight - scaledHeight}px`;
                 
                 // Reset to default grid layout for desktop
+                grid.style.display = 'grid';
                 grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
                 
                 console.log(`Desktop mode: Scale: ${currentScale}`);
