@@ -86,188 +86,78 @@
             font-size: 17px;
         }
         
-.options {
-    background-color: #e9e3e3;
-    padding: 10px;
-    margin-top: 20px;
-    border-radius: 5px;
-    width: 90%; /* Wider for mobile */
-    margin-left: auto;
-    margin-right: auto;
-    min-width: 280px; /* Ensure minimum width */
-}
+        .options {
+            background-color: #e9e3e3;
+            padding: 10px;
+            margin-top: 5px; /* Reduced from 20px to bring it closer to instructions */
+            border-radius: 5px;
+            width: 95%; /* Wider to take more space */
+            margin-left: auto;
+            margin-right: auto;
+            min-width: 280px; /* Ensure minimum width */
+        }
 
-.options-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    flex-wrap: wrap; /* Allow wrapping on very small screens */
-    align-items: center;
-}
+        .options-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap; /* Allow wrapping on very small screens */
+            align-items: center;
+        }
 
-.options-title {
-    font-size: clamp(16px, 5vw, 24px); /* Responsive font size */
-    color: #7d5858;
-    margin-right: 10px;
-    white-space: nowrap;
-    flex-shrink: 0; /* Don't shrink the title */
-}
+        .options-title {
+            font-size: clamp(16px, 5vw, 24px); /* Responsive font size */
+            color: #7d5858;
+            margin-right: 10px;
+            white-space: nowrap;
+            flex-shrink: 0; /* Don't shrink the title */
+        }
 
-.options-controls {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    flex: 1; /* Take remaining space */
-    justify-content: flex-end; /* Push content to the right */
-    flex-wrap: wrap; /* Allow wrapping on very small screens */
-    margin-top: 5px; /* Add space when wrapped */
-}
+        .options-controls {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            flex: 1; /* Take remaining space */
+            justify-content: flex-end; /* Push content to the right */
+            flex-wrap: wrap; /* Allow wrapping on very small screens */
+            margin-top: 5px; /* Add space when wrapped */
+        }
 
-.options-controls a {
-    color: #4a90e2;
-    text-decoration: none;
-    margin: 0 5px; /* Reduced margins */
-    cursor: pointer;
-    font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
-}
+        .options-controls a {
+            color: #4a90e2;
+            text-decoration: none;
+            margin: 0 5px; /* Reduced margins */
+            cursor: pointer;
+            font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
+        }
 
-.options-controls span {
-    color: #999;
-    font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
-}
+        .options-controls span {
+            color: #999;
+            font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
+        }
 
-.font-size-control {
-    display: flex;
-    align-items: center;
-    margin-left: 5px; /* Reduced margin */
-    white-space: nowrap;
-}
+        .font-size-control {
+            display: flex;
+            align-items: center;
+            margin-left: 5px; /* Reduced margin */
+            white-space: nowrap;
+        }
 
-.font-size-control label {
-    margin-right: 5px;
-    font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
-}
+        .font-size-control label {
+            margin-right: 5px;
+            font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
+        }
 
-#fontSizeSlider {
-    width: clamp(60px, 12vw, 100px); /* Responsive width */
-}
+        #fontSizeSlider {
+            width: clamp(60px, 12vw, 100px); /* Responsive width */
+        }
 
-#fontSizeValue {
-    font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
-    width: 45px; /* Fixed width for the font size display */
-    text-align: left;
-}
+        #fontSizeValue {
+            font-size: clamp(14px, 3vw, 16px); /* Responsive font size */
+            width: 45px; /* Fixed width for the font size display */
+            text-align: left;
+        }
 
-/* Mobile specific styles */
-@media (max-width: 767px) {
-    .container {
-        padding: 10px 5px;
-        height: 100vh; /* Full viewport height */
-        display: flex;
-        flex-direction: column;
-    }
-    
-    h1 {
-        font-size: clamp(20px, 6vw, 26px);
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-    
-    .options {
-        width: 95%; /* Almost full width on mobile */
-        margin-top: auto; /* Push to bottom */
-        padding: 8px 5px;
-    }
-    
-    .options-header {
-        justify-content: space-between;
-        margin-bottom: 8px;
-    }
-    
-    .font-size-control label {
-        display: none; /* Hide "Font Size:" label on mobile */
-    }
-    
-    .character-display {
-        font-size: clamp(60px, 16vw, 80px);
-        height: 80px;
-    }
-    
-    .character-container {
-        margin: 15px 0 5px;
-    }
-    
-    /* Improved grid handling on mobile */
-    .hangul-grid {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto;
-        width: 100%;
-        padding-bottom: 5px;
-    }
-    
-    /* Make grid columns narrower on mobile */
-    .grid-column {
-        flex: 0 0 auto;
-        width: 42px !important; /* Fixed width for columns on mobile */
-        min-width: unset !important;
-    }
-    
-    /* Adjust cell content for narrower columns */
-    .hangul-cell {
-        padding: 3px 1px !important;
-    }
-    
-    .character {
-        font-size: 20px !important; /* Smaller on mobile */
-    }
-    
-    .romanization {
-        font-size: 8px !important; /* Smaller on mobile */
-    }
-}
-
-/* Very small screens - additional adjustments */
-@media (max-width: 480px) {
-    .options-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .options-controls {
-        width: 100%;
-        justify-content: space-between;
-        margin-top: 8px;
-    }
-    
-    /* Further reduce column width on very small screens */
-    .grid-column {
-        width: 38px !important;
-    }
-    
-    .character {
-        font-size: 18px !important;
-    }
-    
-    .romanization {
-        font-size: 7px !important;
-    }
-    
-    .options {
-        padding: 5px;
-    }
-    
-    /* Make the grid scrollable horizontally */
-    .hangul-grid::-webkit-scrollbar {
-        height: 3px;
-    }
-    
-    .hangul-grid::-webkit-scrollbar-thumb {
-        background-color: #aaa;
-        border-radius: 3px;
-    }
-}
-        
         .hangul-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -275,11 +165,13 @@
             margin: 0 auto;
             max-width: 100%;
             overflow-x: auto;
+            width: 100%; /* Ensure full width */
         }
         
         .grid-column {
             text-align: center;
-            min-width: 40px; /* Minimum width for columns */
+            min-width: 42px; /* Slightly increased minimum width */
+            flex: 1; /* Make columns take equal space in flex mode */
         }
         
         .column-checkbox {
@@ -311,6 +203,122 @@
         
         .instruction {
             font-size: 14px;
+            margin-bottom: 5px; /* Added to reduce space before options */
+        }
+        
+        /* Mobile specific styles */
+        @media (max-width: 767px) {
+            .container {
+                padding: 10px 5px;
+                height: 100vh; /* Full viewport height */
+                display: flex;
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: clamp(20px, 6vw, 26px);
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .options {
+                width: 95%; /* Almost full width on mobile */
+                margin-top: 0; /* Remove top margin on mobile */
+                padding: 8px 5px;
+            }
+            
+            .options-header {
+                justify-content: space-between;
+                margin-bottom: 8px;
+            }
+            
+            .font-size-control label {
+                display: none; /* Hide "Font Size:" label on mobile */
+            }
+            
+            .character-display {
+                font-size: clamp(60px, 16vw, 80px);
+                height: 80px;
+            }
+            
+            .character-container {
+                margin: 15px 0 5px;
+            }
+            
+            .instruction {
+                margin-bottom: 5px; /* Reduce space between instruction and options */
+            }
+            
+            /* Improved grid handling on mobile */
+            .hangul-grid {
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto;
+                width: 100%;
+                padding-bottom: 5px;
+                justify-content: space-between; /* Distribute columns evenly */
+            }
+            
+            /* Make grid columns fill available width */
+            .grid-column {
+                flex: 1 0 auto;
+                width: 45px !important; /* Fixed width for columns on mobile */
+                min-width: unset !important;
+            }
+            
+            /* Adjust cell content for narrower columns */
+            .hangul-cell {
+                padding: 3px 1px !important;
+            }
+            
+            .character {
+                font-size: 20px !important; /* Smaller on mobile */
+            }
+            
+            .romanization {
+                font-size: 8px !important; /* Smaller on mobile */
+            }
+        }
+
+        /* Very small screens - additional adjustments */
+        @media (max-width: 480px) {
+            .options-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .options-controls {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 8px;
+            }
+            
+            /* Further reduce column width on very small screens */
+            .grid-column {
+                width: 38px !important;
+            }
+            
+            .character {
+                font-size: 18px !important;
+            }
+            
+            .romanization {
+                font-size: 7px !important;
+            }
+            
+            .options {
+                padding: 5px;
+            }
+            
+            /* Make the grid scrollable horizontally */
+            .hangul-grid::-webkit-scrollbar {
+                height: 3px;
+            }
+            
+            .hangul-grid::-webkit-scrollbar-thumb {
+                background-color: #aaa;
+                border-radius: 3px;
+            }
         }
         
         /* Touch device enhancements */
